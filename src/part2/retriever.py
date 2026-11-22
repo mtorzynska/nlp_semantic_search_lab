@@ -57,7 +57,12 @@ class SemanticSearch:
     # use_reranker: None = jeśli jest cross_encoder, False = sam bi-encoder (top context_k jak w part1)
     # dedupe: max 1 chunk na recenzję, chunki z overlapem nie zajmują kilku miejsc w top_k
     def search(
-        self, query: str, *, use_reranker: bool | None = None, dedupe: bool = False
+        self,
+        query: str,
+        *,
+        use_reranker: bool | None = None,
+        dedupe: bool = False,
+        ce_threshold: float | None = None,
     ) -> list[Hit]:
         rerank_on = self.cross_encoder is not None if use_reranker is None else use_reranker
         if rerank_on and self.cross_encoder is None:
@@ -96,7 +101,23 @@ class SemanticSearch:
                     seen.add(self.corpus.review_ids[doc])
                     keep.append(i)
             order, ce = [order[i] for i in keep], [ce[i] for i in keep]
-        order, ce = order[: self.context_k], ce[: self.context_k]
+
+        if ce_threshold is not None and rerank_on:
+            import math
+
+            kept = []
+            for doc, score in zip(order, ce):
+                if score is None:
+                    continue
+                prob = 1.0 / (1.0 + math.exp(-score))  # sigmoid
+                if prob >= ce_threshold:
+                    kept.append((doc, score))
+            if kept:
+                order, ce = zip(*kept)
+            else:
+                order, ce = [], []
+
+        order, ce = list(order)[: self.context_k], list(ce)[: self.context_k]
 
         return [
             Hit(

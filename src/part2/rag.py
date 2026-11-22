@@ -12,6 +12,8 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.retrievers import BaseRetriever
 from langchain_core.runnables import Runnable, RunnableLambda, RunnableParallel, RunnablePassthrough
 
+from part2.citation_validator import validate_citations
+
 RAG_SYSTEM_PROMPT = (
     "You are an assistant that answers questions about movies using ONLY "
     "the movie review excerpts provided in the context.\n\n"
@@ -108,6 +110,7 @@ def run_variants(
                 answer, docs, error = out["answer"], out["docs"], None
             except Exception as exc:  # błąd API nie przerywa całego eksperymentu
                 answer, docs, error = "", [], f"{type(exc).__name__}: {exc}"
+            citation_check = validate_citations(answer, docs)
             rows.append(
                 {
                     "query": query,
@@ -118,6 +121,10 @@ def run_variants(
                     "seconds": round(time.perf_counter() - t0, 2),
                     "error": error,
                     "docs": docs,
+                    "citation_check": citation_check,
+                    "n_valid_citations": len(citation_check.valid_numbers),
+                    "n_invalid_citations": len(citation_check.invalid_numbers),
+                    "citation_coverage": citation_check.coverage,
                 }
             )
     return rows
