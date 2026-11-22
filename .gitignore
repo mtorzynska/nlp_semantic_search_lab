@@ -1,0 +1,25 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Local embedding/dataset caches (regenerable, large)
+.cache/
+
+# Jupyter autosave
+.ipynb_checkpoints/
+
+# Type-checker cache
+.mypy_cache/
+
+# Hugging Face datasets saved to disk
+*.arrow
+
+# Secrets (CLARIN API key)
+.env
