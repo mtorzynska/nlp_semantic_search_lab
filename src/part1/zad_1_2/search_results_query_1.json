@@ -1,0 +1,35 @@
+{
+  "query": "How can I load a dataset offline?",
+  "results": [
+    {
+      "COMMENT": "here is my way to load a dataset offline, but it **requires** an online machine\r\n1. (online machine)\r\n```\r\nimport datasets\r\ndata = datasets.load_dataset(...)\r\ndata.save_to_disk(/YOUR/DATASET/DIR)\r\n```\r\n2. copy the dir from online to the offline machine\r\n3. (offline machine)\r\n```\r\nimport datasets\r\ndata = datasets.load_from_disk(/SAVED/DATA/DIR)\r\n```\r\n\r\nHTH.",
+      "SCORE": 0.7284624576568604,
+      "TITLE": "Discussion using datasets in offline mode",
+      "URL": "https://github.com/huggingface/datasets/issues/824"
+    },
+    {
+      "COMMENT": "> here is my way to load a dataset offline, but it **requires** an online machine\n> \n> 1. (online machine)\n> \n> ```\n> \n> import datasets\n> \n> data = datasets.load_dataset(...)\n> \n> data.save_to_disk(/YOUR/DATASET/DIR)\n> \n> ```\n> \n> 2. copy the dir from online to the offline machine\n> \n> 3. (offline machine)\n> \n> ```\n> \n> import datasets\n> \n> data = datasets.load_from_disk(/SAVED/DATA/DIR)\n> \n> ```\n> \n> \n> \n> HTH.\n\n",
+      "SCORE": 0.7229039669036865,
+      "TITLE": "Discussion using datasets in offline mode",
+      "URL": "https://github.com/huggingface/datasets/issues/824"
+    },
+    {
+      "COMMENT": "I opened a PR that allows to reload modules that have already been loaded once even if there's no internet.\r\n\r\nLet me know if you know other ways that can make the offline mode experience better. I'd be happy to add them :) \r\n\r\nI already note the \"freeze\" modules option, to prevent local modules updates. It would be a cool feature.\r\n\r\n----------\r\n\r\n> @mandubian's second bullet point suggests that there's a workaround allowing you to use your offline (custom?) dataset with `datasets`. Could you please elaborate on how that should look like?\r\n\r\nIndeed `load_dataset` allows to load remote dataset script (squad, glue, etc.) but also you own local ones.\r\nFor example if you have a dataset script at `./my_dataset/my_dataset.py` then you can do\r\n```python\r\nload_dataset(\"./my_dataset\")\r\n```\r\nand the dataset script will generate your dataset once and for all.\r\n\r\n----------\r\n\r\nAbout I'm looking into having `csv`, `json`, `text`, `pandas` dataset builders already included in the `datasets` package, so that they are available offline by default, as opposed to the other datasets that require the script to be downloaded.\r\ncf #1724 ",
+      "SCORE": 0.7116207480430603,
+      "TITLE": "Discussion using datasets in offline mode",
+      "URL": "https://github.com/huggingface/datasets/issues/824"
+    },
+    {
+      "COMMENT": "The local dataset builders (csv, text , json and pandas) are now part of the `datasets` package since #1726 :)\r\nYou can now use them offline\r\n```python\r\ndatasets = load_dataset('text', data_files=data_files)\r\n```\r\n\r\nWe'll do a new release soon",
+      "SCORE": 0.6989234685897827,
+      "TITLE": "Discussion using datasets in offline mode",
+      "URL": "https://github.com/huggingface/datasets/issues/824"
+    },
+    {
+      "COMMENT": "Requiring online connection is a deal breaker in some cases unfortunately so it'd be great if offline mode is added similar to how `transformers` loads models offline fine.\r\n\r\n@mandubian's second bullet point suggests that there's a workaround allowing you to use your offline (custom?) dataset with `datasets`. Could you please elaborate on how that should look like?",
+      "SCORE": 0.6959360837936401,
+      "TITLE": "Discussion using datasets in offline mode",
+      "URL": "https://github.com/huggingface/datasets/issues/824"
+    }
+  ]
+}

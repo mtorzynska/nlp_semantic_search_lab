@@ -1,0 +1,35 @@
+{
+  "query": "Cannot save dataset to disk, permission error",
+  "results": [
+    {
+      "COMMENT": "Hi ! That's because you are trying to overwrite a file that is already open and being used.\r\nIndeed `foo/dataset.arrow` is open and used by your `dataset` object.\r\n\r\nWhen you do `rename_column`, the resulting dataset reads the data from the same arrow file.\r\nIn other cases like when using `map` on the other hand, the resulting dataset reads the data from another arrow file that is the result of the map transform.\r\n\r\nTherefore overwriting a dataset after `rename_column` is not possible, but it is possible after `map`, since `rename_column` doesn't switch to using another arrow file (the actual data stay the same).",
+      "SCORE": 0.699334979057312,
+      "TITLE": "cannot save the dataset to disk after rename_column",
+      "URL": "https://github.com/huggingface/datasets/issues/2689"
+    },
+    {
+      "COMMENT": "Hi thanks for reporting and for proposing a fix :)\r\n\r\nI just merged a fix, feel free to try it from the master branch !",
+      "SCORE": 0.6524133682250977,
+      "TITLE": "Failure to save with save_to_disk",
+      "URL": "https://github.com/huggingface/datasets/issues/1919"
+    },
+    {
+      "COMMENT": "Hi ! We refactored save_to_disk in #2025 so this doesn't happen.\r\nFeel free to try it on master for now\r\nWe'll do a new release soon",
+      "SCORE": 0.6333991885185242,
+      "TITLE": "save_to_disk doesn't work when we use concatenate_datasets function before creating the final dataset_object.",
+      "URL": "https://github.com/huggingface/datasets/issues/2189"
+    },
+    {
+      "COMMENT": "Hello @SBrandeis , this is it:\r\n```\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\Luisa\\AppData\\Local\\Programs\\Python\\Python38\\lib\\site-packages\\datasets\\builder.py\", line 537, in incomplete_dir\r\n    yield tmp_dir\r\n  File \"C:\\Users\\Luisa\\AppData\\Local\\Programs\\Python\\Python38\\lib\\site-packages\\datasets\\builder.py\", line 578, in download_and_prepare\r\n    self._download_and_prepare(\r\n  File \"C:\\Users\\Luisa\\AppData\\Local\\Programs\\Python\\Python38\\lib\\site-packages\\datasets\\builder.py\", line 656, in _download_and_prepare\r\n    self._prepare_split(split_generator, **prepare_split_kwargs)\r\n  File \"C:\\Users\\Luisa\\AppData\\Local\\Programs\\Python\\Python38\\lib\\site-packages\\datasets\\builder.py\", line 982, in _prepare_split\r\n    num_examples, num_bytes = writer.finalize()\r\n  File \"C:\\Users\\Luisa\\AppData\\Local\\Programs\\Python\\Python38\\lib\\site-packages\\datasets\\arrow_writer.py\", line 297, in finalize\r\n    self.write_on_file()\r\n  File \"C:\\Users\\Luisa\\AppData\\Local\\Programs\\Python\\Python38\\lib\\site-packages\\datasets\\arrow_writer.py\", line 230, in write_on_file\r\n    pa_array = pa.array(typed_sequence)\r\n  File \"pyarrow\\array.pxi\", line 222, in pyarrow.lib.array\r\n  File \"pyarrow\\array.pxi\", line 110, in pyarrow.lib._handle_arrow_array_protocol\r\n  File \"C:\\Users\\Luisa\\AppData\\Local\\Programs\\Python\\Python38\\lib\\site-packages\\datasets\\arrow_writer.py\", line 97, in __arrow_array__\r\n    out = pa.array(self.data, type=type)\r\n  File \"pyarrow\\array.pxi\", line 305, in pyarrow.lib.array\r\n  File \"pyarrow\\array.pxi\", line 39, in pyarrow.lib._sequence_to_array\r\n  File \"pyarrow\\error.pxi\", line 122, in pyarrow.lib.pyarrow_internal_check_status\r\n  File \"pyarrow\\error.pxi\", line 107, in pyarrow.lib.check_status\r\npyarrow.lib.ArrowTypeError: Expected bytes, got a 'list' object\r\n\r\nDuring handling of the above exception, another exception occurred:\r\n\r\nTraceback (most recent call last):\r\n  File \"C:/Users/Luisa/Documents/Uni/WS 2020,21/Neural Networks/Final_Project/NN_Project/data_loading.py\", line 122, in <module>\r\n    main()\r\n  File \"C:/Users/Luisa/Documents/Uni/WS 2020,21/Neural Networks/Final_Project/NN_Project/data_loading.py\", line 111, in main\r\n    dataset = datasets.load_dataset(\r\n  File \"C:\\Users\\Luisa\\AppData\\Local\\Programs\\Python\\Python38\\lib\\site-packages\\datasets\\load.py\", line 740, in load_dataset\r\n    builder_instance.download_and_prepare(\r\n  File \"C:\\Users\\Luisa\\AppData\\Local\\Programs\\Python\\Python38\\lib\\site-packages\\datasets\\builder.py\", line 586, in download_and_prepare\r\n    self._save_info()\r\n  File \"C:\\Users\\Luisa\\AppData\\Local\\Programs\\Python\\Python38\\lib\\contextlib.py\", line 131, in __exit__\r\n    self.gen.throw(type, value, traceback)\r\n  File \"C:\\Users\\Luisa\\AppData\\Local\\Programs\\Python\\Python38\\lib\\site-packages\\datasets\\builder.py\", line 543, in incomplete_dir\r\n    shutil.rmtree(tmp_dir)\r\n  File \"C:\\Users\\Luisa\\AppData\\Local\\Programs\\Python\\Python38\\lib\\shutil.py\", line 740, in rmtree\r\n    return _rmtree_unsafe(path, onerror)\r\n  File \"C:\\Users\\Luisa\\AppData\\Local\\Programs\\Python\\Python38\\lib\\shutil.py\", line 618, in _rmtree_unsafe\r\n    onerror(os.unlink, fullname, sys.exc_info())\r\n  File \"C:\\Users\\Luisa\\AppData\\Local\\Programs\\Python\\Python38\\lib\\shutil.py\", line 616, in _rmtree_unsafe\r\n    os.unlink(fullname)\r\nPermissionError: [WinError 32] Der Prozess kann nicht auf die Datei zugreifen, da sie von einem anderen Prozess verwendet wird: 'C:\\\\Users\\\\Luisa\\\\.cache\\\\huggingface\\\\datasets\\\\sample\\\\default-20ee7d51a6a9454f\\\\0.0.0\\\\5fc4c3a355ea77ab446bd31fca5082437600b8364d29b2b95264048bd1f398b1.incomplete\\\\sample-train.arrow'\r\n\r\nProcess finished with exit code 1\r\n```",
+      "SCORE": 0.6191617846488953,
+      "TITLE": "Windows Permission Error (most recent version of datasets)",
+      "URL": "https://github.com/huggingface/datasets/issues/2000"
+    },
+    {
+      "COMMENT": "Hi @itsLuisa, thanks for sharing the Traceback.\r\n\r\nYou are defining the \"id\" field as a `string` feature:\r\n```python\r\nclass Sample(datasets.GeneratorBasedBuilder):\r\n    ...\r\n\r\n    def _info(self):\r\n        return datasets.DatasetInfo(\r\n            features=datasets.Features(\r\n                {\r\n                    \"id\": datasets.Value(\"string\"),\r\n                    # ^^ here\r\n                    \"tokens\": datasets.Sequence(datasets.Value(\"string\")),\r\n                    \"pos_tags\": datasets.Sequence(datasets.features.ClassLabel(names=[...])),\r\n[...]\r\n```\r\n\r\nBut in the `_generate_examples`, the \"id\" field is a list:\r\n```python\r\nids = list()\r\n```\r\n\r\nChanging:\r\n```python\r\n\"id\": datasets.Value(\"string\"),\r\n```\r\nInto:\r\n```python\r\n\"id\": datasets.Sequence(datasets.Value(\"string\")),\r\n```\r\n\r\nShould fix your issue.\r\n\r\nLet me know if this helps!",
+      "SCORE": 0.6191617846488953,
+      "TITLE": "Windows Permission Error (most recent version of datasets)",
+      "URL": "https://github.com/huggingface/datasets/issues/2000"
+    }
+  ]
+}

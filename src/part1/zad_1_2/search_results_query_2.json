@@ -1,0 +1,35 @@
+{
+  "query": "How do I split a dataset into train and test sets?",
+  "results": [
+    {
+      "COMMENT": "Currently you can indeed split a dataset using `ds_test = nlp.load_dataset('imdb, split='test[:5000]')` (works also with percentages).\r\n\r\nHowever right now we don't have a way to shuffle a dataset but we are thinking about it in the discussion in #166. Feel free to share your thoughts about it.\r\n\r\nOne trick that you can do until we have a better solution is to shuffle and split the indices of your dataset:\r\n```python\r\nimport nlp\r\nfrom sklearn.model_selection import train_test_split\r\n\r\nimdb = nlp.load_dataset('imbd', split='test')\r\ntest_indices, val_indices = train_test_split(range(len(imdb)))\r\n```\r\n\r\nand then to iterate each split:\r\n```python\r\nfor i in test_indices:\r\n    example = imdb[i]\r\n   ...\r\n```\r\n",
+      "SCORE": 0.6517463326454163,
+      "TITLE": "documentation missing how to split a dataset",
+      "URL": "https://github.com/huggingface/datasets/issues/259"
+    },
+    {
+      "COMMENT": "this seems to work for my specific problem:\r\n\r\n`self.train_ds, self.test_ds, self.val_ds = map(_prepare_ds, ('train', 'test[:25%]+test[50%:75%]', 'test[75%:]'))`",
+      "SCORE": 0.6476995944976807,
+      "TITLE": "documentation missing how to split a dataset",
+      "URL": "https://github.com/huggingface/datasets/issues/259"
+    },
+    {
+      "COMMENT": "Thanks a lot, the new explanation is very helpful!\r\n\r\nAbout using train_test_split from sklearn: I stumbled across the [same error message as this user ](https://github.com/huggingface/nlp/issues/147 )and thought it can't be used at the moment in this context. Will check it out again.\r\n\r\nOne of the problems is how to shuffle very large datasets, which don't fit into the memory. Well, one strategy could be shuffling data in sections. But in a case where the data is sorted by the labels you have to swap larger sections first. \r\n",
+      "SCORE": 0.6419492363929749,
+      "TITLE": "documentation missing how to split a dataset",
+      "URL": "https://github.com/huggingface/datasets/issues/259"
+    },
+    {
+      "COMMENT": "We added a way to shuffle datasets (shuffle the indices and then reorder to make a new dataset).\r\nYou can do `shuffled_dset = dataset.shuffle(seed=my_seed)`. It shuffles the whole dataset.\r\nThere is also `dataset.train_test_split()` which if very handy (with the same signature as sklearn).\r\n\r\nClosing this issue as we added the docs for splits and tools to split datasets. Thanks again for your feedback !",
+      "SCORE": 0.6305385828018188,
+      "TITLE": "documentation missing how to split a dataset",
+      "URL": "https://github.com/huggingface/datasets/issues/259"
+    },
+    {
+      "COMMENT": "Oh yes right I didn't notice the train set was always in english sorry.\r\nMoreover it seems that the way this dataset is used is to pick a pretrained multilingual model, fine-tune it on the english train set and then evaluate on each test set (one per language).\r\nSo to better fit the usual usage of this dataset, I agree that it's better to have one test split per language. \r\n\r\nSomething like your latest example patrick is fine imo :\r\n```python\r\ntrain_dataset = load_dataset(\"xglue\", \"ner\", split=\"train\")\r\ntest_dataset_de = load_dataset(\"xglue\", \"ner\", split=\"test.de\")\r\n```\r\n\r\nI just replace test-de with test.de since `-` is not allowed for split names (it has to follow the `\\w+` regex), and usually we specify the language after a point. ",
+      "SCORE": 0.6225462555885315,
+      "TITLE": "[XGLUE] Adding new dataset",
+      "URL": "https://github.com/huggingface/datasets/issues/749"
+    }
+  ]
+}
